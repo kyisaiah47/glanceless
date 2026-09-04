@@ -1,0 +1,20 @@
+<!doctype html><meta charset="utf-8"><title>contrast fixture: a glyph nobody can see, and a duotone that collapsed</title>
+<!-- FAILS, twice. The first mark is the defect that put glyph measurement into this rule at all:
+     a mark at 1.9 to 1 that every probe counted as present because it was in the DOM at the right
+     size in the right place. The second is a two-tone glyph whose plate has been forced opaque, so
+     it is drawn as two tones and paints as one shape. -->
+<style>
+  body{margin:0;background:#ffffff;color:#1a1a1a;font:16px/1.6 system-ui,sans-serif}
+  main{max-width:800px;margin:0 auto;padding:40px}
+  .flat path{opacity:1}
+</style>
+<main>
+  <h1>Two marks</h1>
+  <p>An unlabelled mark, on its own, at the edge of visible:</p>
+  <div><svg width="28" height="28" viewBox="0 0 24 24"><path fill="#ffae21" d="M4 4 C 8 2, 12 6, 20 4 L 20 20 C 14 22, 8 18, 4 20 Z"/></svg></div>
+  <p>A two-tone mark whose plate has been overridden to full opacity:</p>
+  <div><svg class="flat" width="28" height="28" viewBox="0 0 24 24" style="color:#1a1a1a">
+    <path opacity=".5" fill="currentColor" d="M2 12 C 2 6, 6 2, 12 2 C 18 2, 22 6, 22 12 C 22 18, 18 22, 12 22 C 6 22, 2 18, 2 12 Z"/>
+    <path fill="currentColor" d="M9 12 C 9 10, 10 9, 12 9 C 14 9, 15 10, 15 12 C 15 14, 14 15, 12 15 C 10 15, 9 14, 9 12 Z"/>
+  </svg></div>
+</main>
