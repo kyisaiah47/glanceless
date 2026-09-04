@@ -1,0 +1,66 @@
+{
+  "name": "glanceless",
+  "version": "0.1.0",
+  "description": "Page-level design rules measured in a real browser and failed closed: contrast, dead columns, page chrome, full-column figures, a figure over a tracked label, table shape, and copy noise.",
+  "type": "module",
+  "bin": {
+    "glanceless": "bin/glanceless.mjs"
+  },
+  "exports": {
+    ".": "./src/index.mjs",
+    "./rules": "./src/rules/index.mjs",
+    "./noise": "./src/noise.mjs",
+    "./noise-patterns.json": "./src/noise-patterns.json"
+  },
+  "files": [
+    "bin",
+    "src",
+    "test",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "bash test/run.sh",
+    "demo": "node bin/glanceless.mjs demo"
+  },
+  "keywords": [
+    "design-review",
+    "accessibility",
+    "wcag",
+    "contrast",
+    "layout",
+    "visual-regression",
+    "playwright",
+    "ci",
+    "gate",
+    "fail-closed",
+    "copywriting",
+    "lint"
+  ],
+  "license": "MIT",
+  "author": "Kynth Studios (https://kynth.studio)",
+  "homepage": "https://github.com/kyisaiah47/glanceless#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kyisaiah47/glanceless.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kyisaiah47/glanceless/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "playwright": "^1.61.1"
+  },
+  "peerDependencies": {
+    "playwright": ">=1.40.0"
+  },
+  "peerDependenciesMeta": {
+    "playwright": {
+      "optional": true
+    }
+  }
+}
