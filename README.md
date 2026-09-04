@@ -35,13 +35,72 @@ merely worth mentioning.
 
 ## What it looks like
 
-Two pages. Both build. Both render. Only one of them was ever looked at.
+Two pages. Both build. Both render. Only one of them was ever looked at. This is the real,
+unedited output of running the bundled demo, with one line marked below: the demo also runs the
+card-composition rule described in [docs/RULES.md](docs/RULES.md), and its id and finding text
+are elided from this block rather than reproduced here, for the same reason that rule's own
+paragraph in that document does not restate its banned shape.
 
 ```
 $ npx glanceless demo
-```
+glanceless demo: two pages. Both build. Both render. One of them was not looked at.
 
-<!-- GLANCELESS_DEMO_OUTPUT -->
+--- test/fixtures/clean.html
+ok  http://127.0.0.1:54398/clean.html @1440px
+
+1 page view(s) at 1440px, rules: contrast, dead-column, figure, [elided, see note above], table-shape, noise. 0 finding(s), 0 could not be checked.
+
+--- test/fixtures/dirty.html
+
+X   http://127.0.0.1:54402/dirty.html @1440px
+    contrast (text and glyph contrast): 1 finding(s)
+      main > p.faint
+        text below WCAG 1.4.3: 2.1:1 against 4.5:1 at 16px. rgb(179, 179, 179) on rgb(255, 255, 255).
+        "This paragraph is set in a grey that measures about two to o"
+    dead-column (dead column): 1 finding(s)
+      p
+        452px of the page's own 1072px measure is unused beside 440px of content starting at y=256. This
+        block uses 58% of the width the same page establishes elsewhere, and 20% of the page's content
+        rows stop short of it. "The measurement is the page against itself. Ther"
+    figure (full-column figure): 1 finding(s)
+      img
+        fills 100% of main at 1072x715 (aspect 1.5:1, column 1072px). only 0.93% glyph-scale structure.
+        This is a render or a photograph, not something to read (floor 8%). figure-render.png
+    [elided, see note above]: 1 finding(s)
+      div.fig
+        (a real finding printed here when you run the demo yourself; see docs/RULES.md)
+    table-shape (table shape): 2 finding(s)
+      th
+        [rule B] row label is 93 characters, over 64. A label column the reader cannot scan is not a
+        label column. "A row label that is a whole sentence written for a data file rather than for a
+        reader to scan". Fix: author a two to four word term on the row and move the sentence into the
+        cell it belongs to
+      tr
+        [rule C] row spans every data column (colspan=3 of 4). One value across the whole grid is a
+        FACT, not a comparison. "One value stretched across every data column, which is a fact and not a
+        comparison, and a comparison table is the worst ". Fix: move it out of the table into a label
+        and value list; leave the table to rows that actually differ by column
+    noise (copy noise): 3 finding(s)
+      p
+        FILLER NOISE IN PRODUCT COPY (designed-to): "Designed to help" in "Designed to help teams
+        seamlessly streamline their filings and unlock powerful insights.". Fix: say what it does, not
+        what it was designed to do
+      p
+        FILLER NOISE IN PRODUCT COPY (puff-adjective): "seamlessly" in "Designed to help teams
+        seamlessly streamline their filings and unlock powerful insights.". Fix: delete the adjective; a
+        product that does the thing does not need it
+      p
+        FILLER NOISE IN PRODUCT COPY (puff-verb): "streamline their" in "Designed to help teams
+        seamlessly streamline their filings and unlock powerful insights.". Fix: name the concrete
+        action instead of the verb that means nothing
+
+1 page view(s) at 1440px, rules: contrast, dead-column, figure, [elided, see note above], table-shape, noise. 9 finding(s), 0 could not be checked.
+
+Nothing here ships. Fix the page, or change the rule in the open and say why.
+There is no --force, no allowlist and no known-issues file.
+
+demo: the clean page exits 0 and the failing page exits 1. That is the whole product.
+```
 
 ## Install
 
