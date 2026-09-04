@@ -242,6 +242,56 @@ export function probeContrast() {
     return false;
   };
 
+  /* AND A CLIPPING ANCESTOR IS NOT ALWAYS ZERO SIZED. `clippedAway` above only fires on an
+   * ancestor whose CLIENT BOX IS 0x0, which is the sprite-sheet shape it was written for. A
+   * horizontal carousel is the other shape: a track thousands of pixels wide inside a viewport
+   * sized clipper, where the tiles that are not currently on screen are laid out at real
+   * coordinates and painted nowhere.
+   *
+   * Measured on one apex site 2026-09-04 at 1440. Its cover strip lays 43 work tiles on an 8717px
+   * row inside a 1440px `overflow: clip` container; `document.scrollWidth` is 1440, so nothing
+   * beyond it is reachable. 258 tile captions exist, 14 have their centre inside the viewport and
+   * 244 do not. `ground()` correctly declines the strip's own white panel for those 244, because
+   * that panel is viewport sized and is genuinely not behind a box at x=1450..1641, so the walk
+   * falls through to the canvas `#0a0a0a` and the caption's `#1a1a1a` reports 1.14:1. That
+   * produced 240 findings on a page that renders correctly: screenshotted at 1440 the same
+   * morning in both colour schemes, the tiles a reader can actually see read `#1a1a1a` on the
+   * panel's white in light and white on `#1a1a1a` in dark.
+   *
+   * 240 fabricated findings is an order of magnitude more than this rule reports against
+   * stripe.com, and a rule that cannot be made clean by fixing the page is a rule everyone reads
+   * past. The test is geometric and it is the same question `behind()` asks one function up: does
+   * this box intersect the box that clips it. If it does not, nothing of it is painted.
+   *
+   * THE WALK STOPS AT ANY POSITIONED BOX, and that is deliberate. An `absolute` or `fixed`
+   * descendant can be painted outside an ancestor's clip when that ancestor is not its containing
+   * block, and `sticky` is moved by the scroller. Rather than reimplement containing block
+   * resolution and risk DELETING a real finding, this answers "I cannot prove it is clipped" and
+   * measures the element. It is allowed to miss a fabrication; it is not allowed to hide a
+   * defect. */
+  const outsideClip = (el) => {
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) return false;
+    for (let n = el; n && n !== document.documentElement; n = n.parentElement) {
+      const s = getComputedStyle(n);
+      if (s.position !== "static" && s.position !== "relative") return false;
+      if (n === el || s.display === "contents") continue;
+      if (s.overflowX === "visible" && s.overflowY === "visible") continue;
+      if (n.clientWidth <= 0 || n.clientHeight <= 0) continue;
+      const b = n.getBoundingClientRect();
+      /* Touching counts as outside: a box that ends exactly where the clipper begins paints a
+         zero width sliver. The half pixel keeps a subpixel layout from reading as an overlap. */
+      if (
+        r.right <= b.left + 0.5 ||
+        r.left >= b.right - 0.5 ||
+        r.bottom <= b.top + 0.5 ||
+        r.top >= b.bottom - 0.5
+      )
+        return true;
+    }
+    return false;
+  };
+
   /* A CLOSED `<details>` STILL LAYS ITS ANSWER OUT, AND EVERY OTHER TEST HERE SAID IT WAS ON
    * SCREEN. Recent Chrome renders closed-details content through `::details-content`: it is laid
    * out and given a real box, and simply never painted. `getBoundingClientRect()` returns 689x210,
@@ -264,7 +314,8 @@ export function probeContrast() {
       s.visibility !== "hidden" &&
       s.display !== "none" &&
       Number(s.opacity) > 0.05 &&
-      !clippedAway(el)
+      !clippedAway(el) &&
+      !outsideClip(el)
     );
   };
 
@@ -451,7 +502,29 @@ export function probeContrast() {
       return own || (m[2] ?? "");
     };
     const SHAPES = "path, circle, ellipse, rect, polygon";
-    let inkShapes = [...svg.querySelectorAll(SHAPES)];
+    /* A SHAPE INSIDE `<defs>`, `<mask>`, `<clipPath>`, `<pattern>`, `<marker>` OR `<filter>` IS A
+     * DEFINITION, NOT PAINT, and measuring one reports a colour that is never on the screen. Same
+     * lesson as the sprite-sheet guard above, one level in: there the wrapper was a
+     * clipped-to-nothing div, here it is an SVG container the spec says is never rendered.
+     *
+     * Measured on one brand book 2026-09-04 at 1440: 39 findings, all `rgb(255, 255, 255)` on
+     * `rgb(236, 231, 220)` at 1.23:1, across a size ladder of seals and the on-light lockups.
+     * Every one of those seals is a knockout: a `<mask>` holds a white `<rect>` and a black
+     * `<path>` glyph, and the only shape that paints is `<rect fill="var(--red)">`, masked.
+     * `querySelectorAll` reached the mask's white rect first, it carries no `opacity` attribute so
+     * it won the `solid` pick, and the rule compared it to the paper plate behind the whole svg. A
+     * screenshot of that section shows five red seals per row on cream.
+     *
+     * The sprite branch gets the same filter with the referenced <symbol> as its root, so the
+     * symbol itself is never treated as its own definition wrapper. */
+    const DEFS = new Set(["defs", "mask", "clippath", "pattern", "marker", "filter", "symbol"]);
+    const isDefinition = (el, root) => {
+      for (let n = el.parentElement; n && n !== root; n = n.parentElement) {
+        if (DEFS.has((n.tagName || "").toLowerCase())) return true;
+      }
+      return false;
+    };
+    let inkShapes = [...svg.querySelectorAll(SHAPES)].filter((e) => !isDefinition(e, svg));
     let sprite = false;
     let spriteRoot = null;
     if (!inkShapes.length) {
@@ -459,7 +532,7 @@ export function probeContrast() {
       const href = u && (u.getAttribute("href") || u.getAttribute("xlink:href") || "");
       const sym = href && href.startsWith("#") ? document.getElementById(href.slice(1)) : null;
       if (sym) {
-        inkShapes = [...sym.querySelectorAll(SHAPES)];
+        inkShapes = [...sym.querySelectorAll(SHAPES)].filter((e) => !isDefinition(e, sym));
         sprite = true;
         spriteRoot = sym;
       }
