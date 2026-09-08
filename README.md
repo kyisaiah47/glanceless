@@ -208,4 +208,4 @@ MIT. See [LICENSE](LICENSE).
 
 ---
 
-Built by [Kynth Studios](https://kynth.studio).
+Built by [Compound Labs](https://thecompound.tech).
