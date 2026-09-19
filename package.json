@@ -1,6 +1,6 @@
 {
   "name": "glanceless",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Page-level design rules measured in a real browser and failed closed: contrast, dead columns, page chrome, full-column figures, a figure over a tracked label, table shape, and copy noise.",
   "type": "module",
   "bin": {
