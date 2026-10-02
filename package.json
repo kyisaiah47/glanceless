@@ -1,16 +1,13 @@
 {
   "name": "glanceless",
-  "version": "0.1.1",
-  "description": "Page-level design rules measured in a real browser and failed closed: contrast, dead columns, page chrome, full-column figures, a figure over a tracked label, table shape, and copy noise.",
+  "version": "0.2.0",
+  "description": "glanceless now runs ShipProbe. The glanceless command runs shipprobe page with the same seven rules and the same exit codes.",
   "type": "module",
   "bin": {
     "glanceless": "bin/glanceless.mjs"
   },
   "exports": {
-    ".": "./src/index.mjs",
-    "./rules": "./src/rules/index.mjs",
-    "./noise": "./src/noise.mjs",
-    "./noise-patterns.json": "./src/noise-patterns.json"
+    ".": "./src/index.mjs"
   },
   "files": [
     "bin",
@@ -40,7 +37,7 @@
   ],
   "license": "MIT",
   "author": "Compound Labs (https://thecompound.tech)",
-  "homepage": "https://github.com/kyisaiah47/glanceless#readme",
+  "homepage": "https://shipprobe.thecompound.tech/page",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kyisaiah47/glanceless.git"
@@ -49,9 +46,11 @@
     "url": "https://github.com/kyisaiah47/glanceless/issues"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
-  "dependencies": {},
+  "dependencies": {
+    "shipprobe": "^0.1.0"
+  },
   "devDependencies": {
     "playwright": "^1.61.1"
   },

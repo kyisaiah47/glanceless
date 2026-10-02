@@ -1,5 +1,14 @@
 # glanceless
 
+> **glanceless now runs [ShipProbe](https://github.com/kyisaiah47/shipprobe).** ShipProbe replaces
+> leakless, stubless, glanceless and deferless with one CLI and one GitHub Action, and
+> `shipprobe page` holds these rules with one shared contrast implementation. The glanceless
+> command still works: version 0.2.0 runs `shipprobe page` with the same seven rules, the same
+> 1440px default and the same exit codes. One rule has a new id, `numeral-label`. New work happens
+> in ShipProbe, documented at [shipprobe.thecompound.tech](https://shipprobe.thecompound.tech/page).
+> The code from before ShipProbe is at tag
+> [v0.1.1](https://github.com/kyisaiah47/glanceless/tree/v0.1.1).
+
 [![gates](https://github.com/kyisaiah47/glanceless/actions/workflows/ci.yml/badge.svg)](https://github.com/kyisaiah47/glanceless/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/glanceless.svg)](https://www.npmjs.com/package/glanceless)
 [![licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
@@ -110,7 +119,8 @@ npm i -D glanceless playwright         # in a project
 npx playwright install chromium
 ```
 
-Node 18+. Playwright is an optional peer dependency, resolved at run time. A missing browser is
+Node 20+. The one runtime dependency is shipprobe, which runs every rule. Playwright is an
+optional peer dependency, resolved at run time. A missing browser is
 exit 2, could not check. It is never reported as clean.
 
 ## Usage
@@ -171,7 +181,7 @@ them the same way teaches its caller to stop trusting either one.
 
 ```sh
 git clone https://github.com/kyisaiah47/glanceless && cd glanceless
-npm i -D playwright && npx playwright install chromium
+npm install && npx playwright install chromium
 bash test/run.sh
 ```
 

@@ -7,12 +7,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20' }
-      - name: install playwright
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: '22' }
+      # shipprobe is the one dependency; playwright is the dev dependency the suite drives.
+      - name: install
         run: |
-          npm install --no-save playwright
+          npm ci
           npx playwright install --with-deps chromium
       - name: suite
         run: bash test/run.sh

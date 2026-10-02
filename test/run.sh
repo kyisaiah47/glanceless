@@ -1,5 +1,6 @@
 #!/bin/bash
-# run.sh: the whole suite, against the bundled fixtures in test/fixtures.
+# run.sh: the whole suite, against the bundled fixtures in test/fixtures. glanceless now runs
+# ShipProbe, so run `npm install` first; every exit code below is the one glanceless 0.1 gave.
 #
 #   bash test/run.sh
 #
@@ -60,15 +61,8 @@ echo "== dead-column: the page's own content edge is the reference =="
 exits "clean page uses its own width throughout"       0 $CLI $FIX/clean.html --only dead-column
 exits "dirty page: prose stops at half the measure"    1 $CLI $FIX/dirty.html --only dead-column
 
-# One rule id is resolved by its title rather than typed literally here, because the id itself is
-# the name of a banned visual register and this file is prose about tests, not the place to spell
-# it out. The rule module is the source of truth; see its own file for the full measurement.
-SURFACE_RULE=$(node --input-type=module -e "
-  import('./src/rules/index.mjs').then((m) => {
-    const r = m.RULES.find((x) => x.title.includes('tracked label'));
-    process.stdout.write(r.id);
-  });
-")
+# glanceless listed this rule under a different id. In ShipProbe it is numeral-label.
+SURFACE_RULE=numeral-label
 echo "== $SURFACE_RULE: a dominant numeral paired with a small tracked caption =="
 exits "clean page: the number sits inside a sentence"  0 $CLI $FIX/clean.html --only $SURFACE_RULE
 exits "dirty page: the negative fixture card fires"    1 $CLI $FIX/dirty.html --only $SURFACE_RULE
